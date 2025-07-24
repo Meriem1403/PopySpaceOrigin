@@ -3,50 +3,73 @@
 namespace App\Factory;
 
 use App\Entity\Planete;
-use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
+use App\Repository\PlaneteRepository;
+use Zenstruck\Foundry\ModelFactory;
+use Zenstruck\Foundry\Proxy;
+use Zenstruck\Foundry\RepositoryProxy;
 
 /**
- * @extends PersistentProxyObjectFactory<Planete>
+ * @extends ModelFactory<Planete>
+ *
+ * @method        Planete|Proxy                     create(array|callable $attributes = [])
+ * @method static Planete|Proxy                     createOne(array $attributes = [])
+ * @method static Planete|Proxy                     find(object|array|mixed $criteria)
+ * @method static Planete|Proxy                     findOrCreate(array $attributes)
+ * @method static Planete|Proxy                     first(string $sortedField = 'id')
+ * @method static Planete|Proxy                     last(string $sortedField = 'id')
+ * @method static Planete|Proxy                     random(array $attributes = [])
+ * @method static Planete|Proxy                     randomOrCreate(array $attributes = [])
+ * @method static PlaneteRepository|RepositoryProxy repository()
+ * @method static Planete[]|Proxy[]                 all()
+ * @method static Planete[]|Proxy[]                 createMany(int $number, array|callable $attributes = [])
+ * @method static Planete[]|Proxy[]                 createSequence(iterable|callable $sequence)
+ * @method static Planete[]|Proxy[]                 findBy(array $attributes)
+ * @method static Planete[]|Proxy[]                 randomRange(int $min, int $max, array $attributes = [])
+ * @method static Planete[]|Proxy[]                 randomSet(int $number, array $attributes = [])
  */
-final class PlaneteFactory extends PersistentProxyObjectFactory
+final class PlaneteFactory extends ModelFactory
 {
-    /**
-     * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#factories-as-services
-     *
-     * @todo inject services if required
-     */
+    public const NOM_PLANETES = [
+        'Mercure',
+        'Vénus',
+        'Terre',
+        'Mars',
+        'Jupiter',
+        'Saturne',
+        'Uranus',
+        'Neptune',
+    ];
+
+    public const AUTRES_NOMS = [
+        'Proxima Centauri b',
+        'Kepler-186f',
+        'Kepler-62e',
+        'Kepler-62f',
+    ];
+
     public function __construct()
     {
+        parent::__construct();
     }
 
-    public static function class(): string
-    {
-        return Planete::class;
-    }
-
-    /**
-     * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#model-factories
-     *
-     * @todo add your default values here
-     */
-    protected function defaults(): array|callable
+    protected function getDefaults(): array
     {
         return [
-            'dansVoieLactee' => self::faker()->boolean(),
-            'description' => self::faker()->text(),
-            'distanceLumiereTerre' => self::faker()->randomFloat(),
-            'image' => self::faker()->text(),
-            'nom' => self::faker()->text(255),
+            'nom' => self::faker()->randomElement(self::NOM_PLANETES),
+            'description' => self::faker()->paragraph(),
+            'distanceLumiereTerre' => self::faker()->randomFloat(2, 1, 1000),
+            'image' => 'planete-' . self::faker()->numberBetween(1, 4) . '.png',
+            'dansVoieLactee' => true,
         ];
     }
 
-    /**
-     * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#initialization
-     */
-    protected function initialize(): static
+    protected function initialize(): self
     {
-        return $this
-            // ->afterInstantiate(function(Planete $planete): void {})
-        ;
+        return $this;
+    }
+
+    protected static function getClass(): string
+    {
+        return Planete::class;
     }
 }
