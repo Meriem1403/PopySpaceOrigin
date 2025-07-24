@@ -2,6 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 
-.test-fond {
-    background-color: hotpink;
+/* Fond global et texte par défaut */
+body {
+    @apply bg-popy-dark text-popy-white;
+}
+
+/* Titres personnalisés */
+h1, h2 {
+    @apply text-popy-light font-bold tracking-wide;
+}
+
+/* Boutons stylisés */
+.btn-popy {
+    @apply bg-popy-primary text-white px-4 py-2 rounded hover:bg-popy-accent;
+}
+
+/* Cartes ou blocs */
+.card-popy {
+    @apply bg-popy-info text-white p-4 rounded shadow-lg;
 }

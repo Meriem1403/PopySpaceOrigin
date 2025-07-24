@@ -1,36 +1,20 @@
-const plugin = require('tailwindcss/plugin');
-
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+export default {
     content: [
-        "./assets/**/*.js",
-        "./templates/**/*.html.twig",
-        "./vendor/tales-from-a-dev/flowbite-bundle/templates/**/*.html.twig",
-        "./src/Twig/Components/**/*.php"
+        './templates/**/*.html.twig',
+        './assets/**/*.js',
     ],
-    darkMode: 'media',
     theme: {
         extend: {
-            animation: {
-                'fade-in': 'fadeIn .5s ease-out;',
-                wiggle: 'wiggle 1s ease-in-out infinite',
-            },
-            keyframes: {
-                fadeIn: {
-                    '0%': { opacity: 0 },
-                    '100%': { opacity: 1 },
-                },
-                wiggle: {
-                    '0%, 100%': { transform: 'rotate(-3deg)' },
-                    '50%': { transform: 'rotate(3deg)' },
-                }
+            colors: {
+                'popy-dark': '#2e2b65',
+                'popy-primary': '#63478f',
+                'popy-accent': '#ba748d',
+                'popy-info': '#4e7198',
+                'popy-light': '#8bdbdc',
+                'popy-white': '#ffffff',
             },
         },
     },
-    plugins: [
-        plugin(function({ addVariant }) {
-            addVariant('turbo-frame', 'turbo-frame[src] &');
-            addVariant('modal', 'dialog &');
-        }),
-    ],
+    plugins: [],
 }
