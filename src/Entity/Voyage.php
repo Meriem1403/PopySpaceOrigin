@@ -89,4 +89,9 @@ class Voyage
 
         return $this;
     }
+
+    public function isUpgradeTrouDeVer(): ?bool
+    {
+        return $this->upgradeTrouDeVer;
+    }
 }
