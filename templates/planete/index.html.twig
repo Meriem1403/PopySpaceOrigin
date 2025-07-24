@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gérer les planètes{% endblock %}
+
+{% block body %}
+    <div class="test-fond m-4 p-4 rounded-lg">
+        <h1 class="text-xl font-semibold text-white mb-4">Planètes</h1>
+
+        <table class="min-w-full bg-gray-800 text-white">
+            <thead class="border-b border-gray-700">
+            <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Id</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Nom</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Description</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Distance (AL)</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
+            </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-600">
+            {% for planete in planetes %}
+                <tr class="even:bg-gray-700 odd:bg-gray-600">
+                    <td class="px-6 py-4 whitespace-nowrap">{{ planete.id }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ planete.nom }}</td>
+                    <td class="px-6 py-4">{{ planete.description }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ planete.distanceLumiereTerre }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300 italic">
+                        (pas encore de lien)
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="5" class="px-6 py-4 whitespace-nowrap text-center text-gray-400">Aucun enregistrement trouvé</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="mt-4">
+        <span class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-gray-600 cursor-not-allowed opacity-50">
+            Créer une planète (à venir)
+        </span>
+        </div>
+    </div>
+{% endblock %}
