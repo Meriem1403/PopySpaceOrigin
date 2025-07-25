@@ -1,18 +1,21 @@
 <?php
 
-declare(strict_types=1);
-
 namespace App\Controller;
 
+use App\Repository\VoyageRepository;
+use App\Repository\PlaneteRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Annotation\Route;
 
 class MainController extends AbstractController
 {
-    #[Route('/main')]
-    public function index(): Response
+    #[Route('/', name: 'app_accueil')]
+    public function accueil(VoyageRepository $voyageRepository, PlaneteRepository $planeteRepository): Response
     {
-        return $this->render('main/index.html.twig');
+        return $this->render('main/accueil.html.twig', [
+            'voyages' => $voyageRepository->findBy([], ['depart' => 'DESC']),
+            'planetes' => $planeteRepository->findAll(),
+        ]);
     }
 }

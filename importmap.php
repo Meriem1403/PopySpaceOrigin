@@ -23,6 +23,54 @@ return [
         'path' => './vendor/symfony/stimulus-bundle/assets/dist/loader.js',
     ],
     '@hotwired/turbo' => [
-        'version' => '7.3.0',
+        'version' => '8.0.13',
+    ],
+    'turbo-view-transitions' => [
+        'version' => '0.3.0',
+    ],
+    'js-confetti' => [
+        'version' => '0.12.0',
+    ],
+    'tom-select' => [
+        'version' => '2.4.3',
+    ],
+    '@orchidjs/sifter' => [
+        'version' => '1.1.0',
+    ],
+    '@orchidjs/unicode-variants' => [
+        'version' => '1.1.2',
+    ],
+    'tom-select/dist/css/tom-select.default.min.css' => [
+        'version' => '2.4.3',
+        'type' => 'css',
+    ],
+    'tom-select/dist/css/tom-select.default.css' => [
+        'version' => '2.4.3',
+        'type' => 'css',
+    ],
+    'flowbite' => [
+        'version' => '3.1.2',
+    ],
+    '@popperjs/core' => [
+        'version' => '2.11.8',
+    ],
+    'flowbite-datepicker' => [
+        'version' => '1.3.2',
+    ],
+    'flowbite/dist/flowbite.min.css' => [
+        'version' => '3.1.2',
+        'type' => 'css',
+    ],
+    '@symfony/ux-live-component' => [
+        'path' => './vendor/symfony/ux-live-component/assets/dist/live_controller.js',
+    ],
+    'debounce' => [
+        'version' => '2.2.0',
+    ],
+    'stimulus-popover' => [
+        'version' => '6.2.0',
+    ],
+    'stimulus-use' => [
+        'version' => '0.52.3',
     ],
 ];

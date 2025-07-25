@@ -1,0 +1,14 @@
+<h1 class="text-3xl mb-6">Bienvenue sur <span class="text-popy-light font-bold">PopySpaceOrigin</span></h1>
+
+<ul class="space-y-2">
+    {% for voyage in voyages %}
+        <li class="card-popy">
+            <span class="font-semibold text-popy-white">{{ voyage.objectif }}</span>
+            <span class="ml-2 text-sm text-popy-light">
+                (départ prévu le {{ voyage.depart|date('d/m/Y') }})
+            </span>
+        </li>
+    {% else %}
+        <li class="text-gray-400 italic">Aucun voyage enregistré pour l’instant.</li>
+    {% endfor %}
+</ul>
