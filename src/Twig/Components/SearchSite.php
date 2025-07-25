@@ -17,9 +17,8 @@ class SearchSite
     public string $query = '';
 
     public function __construct(
-        private VoyageRepository $voyageRepository
-    ) {
-    }
+        readonly private VoyageRepository $voyageRepository
+    ) {}
 
     /**
      * @return Voyage[]

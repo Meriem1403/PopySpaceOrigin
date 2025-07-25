@@ -22,6 +22,28 @@ class VoyageRepository extends ServiceEntityRepository
         parent::__construct($registry, Voyage::class);
     }
 
+    /**
+     * Recherche simple utilisée dans le composant SearchSite
+     *
+     * @return Voyage[]
+     */
+    public function findBySearch(
+        string $query,
+        array $searchPlanets = [],
+        int $limit = null
+    ): array {
+        $qb = $this->findBySearchQueryBuilder($query, $searchPlanets);
+
+        if ($limit !== null) {
+            $qb->setMaxResults($limit);
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * Construit une requête de recherche paginable avec tri
+     */
     public function findBySearchQueryBuilder(
         ?string $query,
         array $searchPlanets = [],
@@ -32,7 +54,7 @@ class VoyageRepository extends ServiceEntityRepository
             ->leftJoin('v.planet', 'p')
             ->addSelect('p');
 
-        if ($query !== null && $query !== '') {
+        if (!empty($query)) {
             $qb->andWhere('v.purpose LIKE :query')
                 ->setParameter('query', '%' . $query . '%');
         }
@@ -43,11 +65,10 @@ class VoyageRepository extends ServiceEntityRepository
         }
 
         $validSorts = ['purpose', 'leaveAt'];
-        if (in_array($sort, $validSorts, true)) {
-            $qb->orderBy('v.' . $sort, strtoupper($direction) === 'DESC' ? 'DESC' : 'ASC');
-        } else {
-            $qb->orderBy('v.leaveAt', 'ASC');
-        }
+        $sort = in_array($sort, $validSorts, true) ? $sort : 'leaveAt';
+        $direction = strtoupper($direction) === 'DESC' ? 'DESC' : 'ASC';
+
+        $qb->orderBy('v.' . $sort, $direction);
 
         return $qb;
     }
