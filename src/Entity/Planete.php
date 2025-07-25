@@ -29,7 +29,7 @@ class Planete
     #[GreaterThanOrEqual(0)]
     private ?float $distanceLumiereTerre = null;
 
-    #[ORM\Column()]
+    #[ORM\Column]
     #[NotBlank]
     private ?string $image = null;
 
@@ -93,6 +93,11 @@ class Planete
     {
         return $this->dansVoieLactee;
     }
+    public function isInMilkyWay(): bool
+    {
+        return true;
+    }
+
 
     public function setDansVoieLactee(bool $dansVoieLactee): self
     {
