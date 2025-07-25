@@ -1,0 +1,52 @@
+<tr class="even:bg-gray-700 odd:bg-gray-600" id="voyage-list-item-{{ voyage.id }}">
+    <td class="px-6 py-4 whitespace-nowrap">{{ voyage.id }}</td>
+    <td class="px-6 py-4">{{ voyage.purpose }}</td>
+    <td class="px-6 py-4 whitespace-nowrap">
+        {{ voyage.leaveAt ? voyage.leaveAt|date('Y-m-d H:i:s') : '' }}
+    </td>
+    <td class="px-6 py-4 whitespace-nowrap flex items-center">
+        <a href="{{ path('app_voyage_show', {'id': voyage.id}) }}" class="text-blue-400 hover:text-blue-600">voir</a>
+
+        <a
+            href="{{ path('app_voyage_edit', {'id': voyage.id}) }}"
+            class="ml-4 text-yellow-400 hover:text-yellow-600"
+            data-turbo-frame="modal"
+        >modifier</a>
+
+        <button
+            class="ml-4 text-red-400 hover:text-red-600"
+            data-action="modal#open"
+            data-modal-target="confirm-delete-{{ voyage.id }}"
+        >
+            supprimer
+        </button>
+
+        <div
+            id="confirm-delete-{{ voyage.id }}"
+            class="hidden fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center"
+            data-controller="modal"
+        >
+            <div class="bg-gray-800 rounded-lg p-6 shadow-lg max-w-md w-full">
+                <svg class="mx-auto mb-4 text-gray-400 w-12 h-12 dark:text-gray-200" xmlns="http://www.w3.org/2000/svg"
+                     viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
+                     stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                    <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"/>
+                    <path d="M12 9v4"/>
+                    <path d="M12 16v.01"/>
+                </svg>
+
+                <h3 class="mb-5 text-lg font-normal text-gray-300 text-center">
+                    Supprimer ce voyage intergalactique ?
+                </h3>
+
+                <div class="flex justify-between items-center">
+                    <button type="button" class="text-sm text-gray-300 hover:underline" data-action="modal#close">
+                        Annuler
+                    </button>
+                    {{ include('voyage/_delete_form.html.twig') }}
+                </div>
+            </div>
+        </div>
+    </td>
+</tr>
