@@ -60,6 +60,16 @@ body {
 .ts-wrapper .ts-dropdown {
     @apply shadow-md;
 }
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
 
 [data-popover-target=card]:after {
     content: "";

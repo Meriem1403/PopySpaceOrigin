@@ -1,0 +1,32 @@
+{% extends 'modalBase.html.twig' %}
+
+{% block title %}Nouveau voyage{% endblock %}
+
+{% block body %}
+    <div class="m-4 p-4 modal:m-0 modal:p-0 bg-gray-800 rounded-lg">
+        <div class="flex justify-between">
+            <h1 class="text-xl font-semibold text-white mb-4">Créer un nouveau voyage</h1>
+
+            <div class="mr-4">
+                <a href="{{ path('app_voyage_index') }}" class="text-sm font-medium text-white hover:underline">
+                    Retour à la liste
+                </a>
+                <div class="inline-block">
+                    {% if form.vars.data.id|default %}
+                        {{ include('voyage/_delete_form.html.twig') }}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        {{ include('voyage/_form.html.twig') }}
+    </div>
+{% endblock %}
+
+{% block stream_success %}
+    <div data-turbo-stream>
+        <div data-turbo-action="prepend" data-turbo-target="#voyage-list tbody">
+            {{ include('voyage/_row.html.twig') }}
+        </div>
+    </div>
+{% endblock %}
