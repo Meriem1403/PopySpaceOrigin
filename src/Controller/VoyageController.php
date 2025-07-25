@@ -1,5 +1,5 @@
 <?php
-
+// src/Controller/VoyageController.php
 namespace App\Controller;
 
 use App\Entity\Voyage;
@@ -7,115 +7,83 @@ use App\Form\VoyageType;
 use App\Repository\VoyageRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/voyage')]
 class VoyageController extends AbstractController
 {
-    #[Route('/', name: 'app_voyage_index', methods: ['GET'])]
-    public function index(VoyageRepository $voyageRepository): Response
-    {
-        return $this->render('voyage/index.html.twig', [
-            'voyages' => $voyageRepository->findBy([], ['id' => 'DESC']),
-        ]);
-    }
+#[Route('/', name: 'app_voyage_index', methods: ['GET'])]
+public function index(VoyageRepository $voyageRepository): Response
+{
+$voyages = $voyageRepository->findBy([], ['id' => 'DESC']);
 
-    #[Route('/new', name: 'app_voyage_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $voyage = new Voyage();
-        $form = $this->createVoyageForm($voyage);
-        $form->handleRequest($request);
+return $this->render('voyage/index.html.twig', [
+'voyages' => $voyages,
+]);
+}
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($voyage);
-            $entityManager->flush();
+#[Route('/new', name: 'app_voyage_new', methods: ['GET', 'POST'])]
+public function new(Request $request, EntityManagerInterface $em): Response
+{
+$voyage = new Voyage();
+$form = $this->createForm(VoyageType::class, $voyage);
+$form->handleRequest($request);
 
-            $this->addFlash('success', 'Voyage enregistré.');
+if ($form->isSubmitted() && $form->isValid()) {
+$em->persist($voyage);
+$em->flush();
 
-            if ($request->headers->has('turbo-frame')) {
-                $stream = $this->renderBlockView('voyage/new.html.twig', 'stream_success', [
-                    'voyage' => $voyage,
-                ]);
-                $this->addFlash('stream', $stream);
-            }
+$this->addFlash('success', 'Voyage créé !');
 
-            return $this->redirectToRoute('app_voyage_index', [], Response::HTTP_SEE_OTHER);
-        }
+return $this->redirectToRoute('app_voyage_index');
+}
 
-        return $this->render('voyage/new.html.twig', [
-            'voyage' => $voyage,
-            'form' => $form,
-        ]);
-    }
+return $this->render('voyage/new.html.twig', [
+'voyage' => $voyage,
+'form' => $form->createView(),
+]);
+}
 
-    #[Route('/{id}', name: 'app_voyage_show', methods: ['GET'])]
-    public function show(Voyage $voyage): Response
-    {
-        return $this->render('voyage/show.html.twig', [
-            'voyage' => $voyage,
-        ]);
-    }
+#[Route('/{id}', name: 'app_voyage_show', methods: ['GET'])]
+public function show(Voyage $voyage): Response
+{
+return $this->render('voyage/show.html.twig', [
+'voyage' => $voyage,
+]);
+}
 
-    #[Route('/{id}/edit', name: 'app_voyage_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Voyage $voyage, EntityManagerInterface $entityManager): Response
-    {
-        $form = $this->createVoyageForm($voyage);
-        $form->handleRequest($request);
+#[Route('/{id}/edit', name: 'app_voyage_edit', methods: ['GET', 'POST'])]
+public function edit(Request $request, Voyage $voyage, EntityManagerInterface $em): Response
+{
+$form = $this->createForm(VoyageType::class, $voyage);
+$form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
+if ($form->isSubmitted() && $form->isValid()) {
+$em->flush();
 
-            $this->addFlash('success', 'Voyage mis à jour.');
+$this->addFlash('success', 'Voyage mis à jour !');
 
-            if ($request->headers->has('turbo-frame')) {
-                $stream = $this->renderBlockView('voyage/edit.html.twig', 'stream_success', [
-                    'voyage' => $voyage,
-                ]);
-                $this->addFlash('stream', $stream);
-            }
+return $this->redirectToRoute('app_voyage_index');
+}
 
-            return $this->redirectToRoute('app_voyage_edit', ['id' => $voyage->getId()], Response::HTTP_SEE_OTHER);
-        }
+return $this->render('voyage/edit.html.twig', [
+'voyage' => $voyage,
+'form' => $form->createView(),
+]);
+}
 
-        return $this->render('voyage/edit.html.twig', [
-            'voyage' => $voyage,
-            'form' => $form,
-        ]);
-    }
+#[Route('/{id}/delete', name: 'app_voyage_delete', methods: ['POST'])]
+public function delete(Request $request, Voyage $voyage, EntityManagerInterface $em): Response
+{
+if ($this->isCsrfTokenValid('delete'.$voyage->getId(), $request->request->get('_token'))) {
+$em->remove($voyage);
+$em->flush();
 
-    #[Route('/{id}', name: 'app_voyage_delete', methods: ['POST'])]
-    public function delete(Request $request, Voyage $voyage, EntityManagerInterface $entityManager): Response
-    {
-        if ($this->isCsrfTokenValid('delete'.$voyage->getId(), $request->request->get('_token'))) {
-            $id = $voyage->getId();
-            $entityManager->remove($voyage);
-            $entityManager->flush();
+$this->addFlash('success', 'Voyage supprimé !');
+}
 
-            $this->addFlash('success', 'Voyage supprimé.');
-
-            if ($request->headers->has('turbo-frame')) {
-                $stream = $this->renderBlockView('voyage/delete.html.twig', 'success_stream', [
-                    'id' => $id,
-                ]);
-                $this->addFlash('stream', $stream);
-            }
-        }
-
-        return $this->redirectToRoute('app_voyage_index', [], Response::HTTP_SEE_OTHER);
-    }
-
-    private function createVoyageForm(Voyage $voyage = null): FormInterface
-    {
-        $voyage ??= new Voyage();
-
-        return $this->createForm(VoyageType::class, $voyage, [
-            'action' => $voyage->getId()
-                ? $this->generateUrl('app_voyage_edit', ['id' => $voyage->getId()])
-                : $this->generateUrl('app_voyage_new'),
-        ]);
-    }
+return $this->redirectToRoute('app_voyage_index');
+}
 }

@@ -27,6 +27,9 @@ body {
 .ts-wrapper.single .ts-control > input {
     @apply bg-transparent text-white;
 }
+textarea {
+    @apply w-full bg-gray-900 text-white border border-gray-600 rounded-md p-2 shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none;
+}
 
 .ts-wrapper .ts-dropdown .option {
     @apply bg-gray-800 text-white;

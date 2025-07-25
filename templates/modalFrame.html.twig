@@ -1,4 +1,4 @@
-<div id="modal" data-turbo-frame>
+<turbo-frame id="modal">
     {% block body %}{% endblock %}
     {{ include('_frameSuccessStreams.html.twig', { frame: 'modal' }) }}
-</div>
+</turbo-frame>

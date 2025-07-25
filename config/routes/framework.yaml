@@ -1,4 +1,17 @@
+# config/routes/framework.yaml
+
+# Désactivation de la route d’erreur PHP (n’existe plus en Symfony 6.4+)
+# when@dev:
+#     _errors:
+#         resource: '@FrameworkBundle/Resources/config/routing/errors.php'
+#         type: php
+#         prefix: /_error
+
+# À la place, vous pouvez commenter entièrement le bloc `when@dev`
+# ou, si vous tenez à avoir l’affichage d’erreur, utiliser la version XML existante :
+
 when@dev:
-    _errors:
-        resource: '@FrameworkBundle/Resources/config/routing/errors.php'
+    _error_test:
+        resource: '@FrameworkBundle/Resources/config/routing/errors.xml'
+        type: xml
         prefix: /_error

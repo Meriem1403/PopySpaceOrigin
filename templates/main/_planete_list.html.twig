@@ -1,18 +1,22 @@
+{# templates/main/_planete_list.html.twig #}
 <ul>
-    {% for planet in planets %}
+    {% for planete in planetes %}
         <li class="mb-4 group">
-            <a href="{{ path('app_planet_show', { 'id': planet.id }) }}" class="block transform transition duration-300 ease-in-out hover:translate-x-1 hover:bg-gray-700 rounded">
+            <a
+                href="{{ path('app_planete_show', { id: planete.id }) }}"
+                class="block transform transition duration-300 ease-in-out hover:translate-x-1 hover:bg-gray-700 rounded"
+            >
                 <div class="flex justify-between items-start p-2">
                     <div class="pr-3">
-                        <span class="text-white">{{ planet.name }}</span>
+                        <span class="text-white">{{ planete.nom }}</span>
                         <span class="block text-gray-400 text-sm">
-                            {{ planet.lightYearsFromEarth|round|number_format }}&nbsp;années-lumière
+                            {{ planete.distanceLumiereTerre|round|number_format }} années‑lumière
                         </span>
                     </div>
                     <img
                         class="flex-shrink-0 w-8 h-8 bg-gray-600 rounded-full group-hover:bg-gray-500 transition duration-300 ease-in-out"
-                        src="{{ asset('images/' ~ planet.imageFilename) }}"
-                        alt="Image de {{ planet.name }}"
+                        src="{{ asset('images/' ~ planete.image) }}"
+                        alt="Image de {{ planete.nom }}"
                     >
                 </div>
             </a>

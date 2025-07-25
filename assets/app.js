@@ -1,16 +1,16 @@
 import * as Turbo from '@hotwired/turbo';
 import './bootstrap.js';
 import './styles/app.css';
-import alienGreeting from './lib/alienGreeting.js';
+import 'flowbite';
+import alienGreeting from './lib/alien-greeting.js';
+import TomSelect from 'tom-select'; // ✅ Import de Tom Select
 import { shouldPerformTransition, performTransition } from 'turbo-view-transitions';
-import JSConfetti from 'js-confetti';
 
-// Message d’accueil personnalisé
-alienGreeting('Bienvenue sur PopySpaceOrigin !', true);
+// alien hello 👽
+alienGreeting('Give us all your candy!', false);
 
-// Transitions Turbo + animation douce lors des changements de vues
+// Transition automatique
 let skipNextRenderTransition = false;
-
 document.addEventListener('turbo:before-render', (event) => {
     if (shouldPerformTransition() && !skipNextRenderTransition) {
         event.preventDefault();
@@ -22,17 +22,19 @@ document.addEventListener('turbo:before-render', (event) => {
 });
 
 document.addEventListener('turbo:load', () => {
-    // Affichage de confettis galactiques à l’arrivée sur une page
-    const jsConfetti = new JSConfetti();
-
-    jsConfetti.addConfetti({
-        emojis: ['🚀', '🪐', '👾', '✨', '🌌'],
-        confettiRadius: 6,
-        confettiNumber: 60,
-    });
-
-    // Turbo cache désactivé pour éviter les glitches visuels (optionnel)
+    // Exclut la page du cache turbo si nécessaire
     // if (shouldPerformTransition()) Turbo.cache.exemptPageFromCache();
+
+    // ✅ Initialise Tom Select sur les <select.tom-select>
+    document.querySelectorAll('select.tom-select').forEach((select) => {
+        new TomSelect(select, {
+            create: false,
+            sortField: {
+                field: 'text',
+                direction: 'asc'
+            }
+        });
+    });
 });
 
 document.addEventListener('turbo:before-frame-render', (event) => {

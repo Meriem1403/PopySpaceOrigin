@@ -6,6 +6,7 @@ use App\Repository\VoyageRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use DateTimeImmutable;
 
 #[ORM\Entity(repositoryClass: VoyageRepository::class)]
 class Voyage
@@ -16,9 +17,9 @@ class Voyage
     private ?int $id = null;
 
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
-    #[NotBlank]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?Planete $planete = null;
+
 
     #[ORM\Column(length: 255)]
     #[NotBlank]
@@ -30,11 +31,11 @@ class Voyage
 
     #[ORM\Column]
     #[NotBlank]
-    private ?\DateTimeImmutable $depart;
+    private ?DateTimeImmutable $depart;
 
     public function __construct()
     {
-        $this->depart = new \DateTimeImmutable('+1 month');
+        $this->depart = new DateTimeImmutable('+1 month');
     }
 
     public function getId(): ?int
@@ -66,12 +67,12 @@ class Voyage
         return $this;
     }
 
-    public function getDepart(): ?\DateTimeImmutable
+    public function getDepart(): ?DateTimeImmutable
     {
         return $this->depart;
     }
 
-    public function setDepart(?\DateTimeImmutable $depart): static
+    public function setDepart(?DateTimeImmutable $depart): static
     {
         $this->depart = $depart;
 

@@ -20,15 +20,25 @@ class PlaneteRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Planete::class);
     }
+//    public function findByExampleField($value): array
+//    {
+//        return $this->createQueryBuilder('p')
+//            ->andWhere('p.exampleField = :val')
+//            ->setParameter('val', $value)
+//            ->orderBy('p.id', 'ASC')
+//            ->setMaxResults(10)
+//            ->getQuery()
+//            ->getResult()
+//        ;
+//    }
 
-    // Exemple : à activer si besoin
-    // public function findByNom(string $nom): array
-    // {
-    //     return $this->createQueryBuilder('p')
-    //         ->andWhere('p.name LIKE :nom')
-    //         ->setParameter('nom', '%' . $nom . '%')
-    //         ->orderBy('p.id', 'ASC')
-    //         ->getQuery()
-    //         ->getResult();
-    // }
+//    public function findOneBySomeField($value): ?Planet
+//    {
+//        return $this->createQueryBuilder('p')
+//            ->andWhere('p.exampleField = :val')
+//            ->setParameter('val', $value)
+//            ->getQuery()
+//            ->getOneOrNullResult()
+//        ;
+//    }
 }

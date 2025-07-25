@@ -7,6 +7,7 @@ use App\Repository\PlaneteRepository;
 use Zenstruck\Foundry\ModelFactory;
 use Zenstruck\Foundry\Proxy;
 use Zenstruck\Foundry\RepositoryProxy;
+use Faker\Factory as FakerFactory;
 
 /**
  * @extends ModelFactory<Planete>
@@ -29,22 +30,28 @@ use Zenstruck\Foundry\RepositoryProxy;
  */
 final class PlaneteFactory extends ModelFactory
 {
-    public const NOM_PLANETES = [
-        'Mercure',
-        'Vénus',
-        'Terre',
-        'Mars',
-        'Jupiter',
-        'Saturne',
-        'Uranus',
-        'Neptune',
+    public const NOMS_GALACTIQUES = [
+        'Mercure', 'Vénus', 'Terre', 'Mars', 'Jupiter', 'Saturne', 'Uranus', 'Neptune',
+    ];
+
+    public const NOMS_EXOPLANETES = [
+        'Proxima Centauri b', 'Kepler-186f', 'Kepler-62e', 'Kepler-62f',
     ];
 
     public const AUTRES_NOMS = [
-        'Proxima Centauri b',
-        'Kepler-186f',
-        'Kepler-62e',
-        'Kepler-62f',
+        'Pandora', 'LV-426', 'Hoth', 'Tatooine', 'Arrakis', 'Gallifrey', 'Namek', 'Cybertron',
+    ];
+
+
+    private const DESCRIPTIONS_FR = [
+        'Une planète riche en ressources rares et en énergie solaire.',
+        'Surface rocheuse instable mais atmosphère exploitable.',
+        'Candidate idéale pour les colonies scientifiques avancées.',
+        'Présence de formes de vie microbiennes détectée récemment.',
+        'Activité volcanique intense, propice aux études thermiques.',
+        'Magnétosphère puissante : bonne protection contre les radiations.',
+        'Planète glacée mais stable, terrain favorable aux avant-postes.',
+        'Géologie unique avec des matériaux inconnus sur Terre.',
     ];
 
     public function __construct()
@@ -54,12 +61,14 @@ final class PlaneteFactory extends ModelFactory
 
     protected function getDefaults(): array
     {
+        $faker = FakerFactory::create('fr_FR');
+
         return [
-            'nom' => self::faker()->randomElement(self::NOM_PLANETES),
-            'description' => self::faker()->paragraph(),
-            'distanceLumiereTerre' => self::faker()->randomFloat(2, 1, 1000),
-            'image' => 'planete-' . self::faker()->numberBetween(1, 4) . '.png',
-            'dansVoieLactee' => true,
+            'nom'                  => $faker->randomElement(array_merge(self::NOMS_GALACTIQUES, self::NOMS_EXOPLANETES)),
+            'description'          => $faker->randomElement(self::DESCRIPTIONS_FR),
+            'distanceLumiereTerre' => $faker->randomFloat(2, 0, 1000),
+            'image'                => 'planete' . $faker->numberBetween(1, 4) . '.png',
+            'dansVoieLactee'       => $faker->boolean(80),
         ];
     }
 

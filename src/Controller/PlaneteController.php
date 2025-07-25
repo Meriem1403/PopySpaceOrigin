@@ -9,87 +9,87 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Annotation\Route;
 
-#[Route('/planet')]
+#[Route('/planete')]
 class PlaneteController extends AbstractController
 {
-    #[Route('/', name: 'app_planet_index', methods: ['GET'])]
-    public function index(PlaneteRepository $planetRepository): Response
+    #[Route('/', name: 'app_planete_index', methods: ['GET'])]
+    public function index(PlaneteRepository $planeteRepository): Response
     {
         return $this->render('planete/index.html.twig', [
-            'planets' => $planetRepository->findAll(),
+            'planetes' => $planeteRepository->findAll(),
         ]);
     }
 
-    #[Route('/new', name: 'app_planet_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    #[Route('/new', name: 'app_planete_new', methods: ['GET', 'POST'])]
+    public function new(Request $request, EntityManagerInterface $em): Response
     {
-        $planet = new Planete();
-        $form = $this->createForm(PlaneteType::class, $planet);
+        $planete = new Planete();
+        $form = $this->createForm(PlaneteType::class, $planete);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($planet);
-            $entityManager->flush();
+            $em->persist($planete);
+            $em->flush();
 
-            $this->addFlash('success', 'Planète ajoutée avec succès.');
+            $this->addFlash('success', 'Planète créée !');
 
-            return $this->redirectToRoute('app_planet_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_planete_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('planete/new.html.twig', [
-            'planet' => $planet,
-            'form' => $form,
+            'planete' => $planete,
+            'form'    => $form->createView(),
         ]);
     }
 
-    #[Route('/{id}', name: 'app_planet_show', methods: ['GET'])]
-    public function show(Planete $planet): Response
+    #[Route('/{id}', name: 'app_planete_show', methods: ['GET'])]
+    public function show(Planete $planete): Response
     {
         return $this->render('planete/show.html.twig', [
-            'planet' => $planet,
+            'planete' => $planete,
         ]);
     }
 
-    #[Route('/{id}/card', name: 'app_planet_show_card', methods: ['GET'])]
-    public function showCard(Planete $planet): Response
+    #[Route('/{id}/card', name: 'app_planete_show_card', methods: ['GET'])]
+    public function showCard(Planete $planete): Response
     {
         return $this->render('planete/_card.html.twig', [
-            'planet' => $planet,
+            'planete' => $planete,
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'app_planet_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Planete $planet, EntityManagerInterface $entityManager): Response
+    #[Route('/{id}/edit', name: 'app_planete_edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request, Planete $planete, EntityManagerInterface $em): Response
     {
-        $form = $this->createForm(PlaneteType::class, $planet);
+        $form = $this->createForm(PlaneteType::class, $planete);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
+            $em->flush();
 
-            $this->addFlash('success', 'Planète mise à jour.');
+            $this->addFlash('success', 'Planète modifiée !');
 
-            return $this->redirectToRoute('app_planet_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_planete_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('planete/edit.html.twig', [
-            'planet' => $planet,
-            'form' => $form,
+            'planete' => $planete,
+            'form'    => $form->createView(),
         ]);
     }
 
-    #[Route('/{id}', name: 'app_planet_delete', methods: ['POST'])]
-    public function delete(Request $request, Planete $planet, EntityManagerInterface $entityManager): Response
+    #[Route('/{id}', name: 'app_planete_delete', methods: ['POST'])]
+    public function delete(Request $request, Planete $planete, EntityManagerInterface $em): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$planet->getId(), $request->request->get('_token'))) {
-            $entityManager->remove($planet);
-            $entityManager->flush();
+        if ($this->isCsrfTokenValid('delete'.$planete->getId(), $request->request->get('_token'))) {
+            $em->remove($planete);
+            $em->flush();
 
-            $this->addFlash('success', 'Planète supprimée.');
+            $this->addFlash('success', 'Planète supprimée !');
         }
 
-        return $this->redirectToRoute('app_planet_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_planete_index', [], Response::HTTP_SEE_OTHER);
     }
 }

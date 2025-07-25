@@ -3,11 +3,10 @@
 namespace App\Factory;
 
 use App\Entity\Voyage;
-use App\Repository\VoyageRepository;
+use App\Factory\PlaneteFactory;
 use Zenstruck\Foundry\ModelFactory;
 use Zenstruck\Foundry\Proxy;
 use Zenstruck\Foundry\RepositoryProxy;
-use DateTimeImmutable;
 
 /**
  * @extends ModelFactory<Voyage>
@@ -20,7 +19,7 @@ use DateTimeImmutable;
  * @method static Voyage|Proxy                     last(string $sortedField = 'id')
  * @method static Voyage|Proxy                     random(array $attributes = [])
  * @method static Voyage|Proxy                     randomOrCreate(array $attributes = [])
- * @method static VoyageRepository|RepositoryProxy repository()
+ * @method static RepositoryProxy|VoyageRepository repository()
  * @method static Voyage[]|Proxy[]                 all()
  * @method static Voyage[]|Proxy[]                 createMany(int $number, array|callable $attributes = [])
  * @method static Voyage[]|Proxy[]                 createSequence(iterable|callable $sequence)
@@ -30,6 +29,20 @@ use DateTimeImmutable;
  */
 final class VoyageFactory extends ModelFactory
 {
+    private const OBJECTIFS_SPATIAUX = [
+        'Installer une base de recherche sur la surface.',
+        'Explorer les gisements de minerais rares.',
+        'Établir un avant-poste de communication galactique.',
+        'Analyser l’atmosphère pour une éventuelle colonisation.',
+        'Cartographier les reliefs et les structures naturelles.',
+        'Capturer des échantillons de sol extraterrestre.',
+        'Créer un couloir commercial interstellaire.',
+        'Évaluer les risques de radiation dans la zone orbitale.',
+        'Effectuer des tests de terraformage automatisés.',
+        'Scanner l’activité magnétique de la planète.',
+        'Étudier la faune et flore potentiellement présentes.',
+    ];
+
     public function __construct()
     {
         parent::__construct();
@@ -37,11 +50,13 @@ final class VoyageFactory extends ModelFactory
 
     protected function getDefaults(): array
     {
+        $faker = \Faker\Factory::create('fr_FR');
+
         return [
-            'depart' => DateTimeImmutable::createFromMutable(self::faker()->dateTimeBetween('+1 day', '+1 year')),
-            'planete' => PlaneteFactory::new(),
-            'objectif' => self::faker()->sentence(),
-            'upgradeTrouDeVer' => self::faker()->boolean(25), // 25 % de chance qu'il soit activé
+            'depart'            => \DateTimeImmutable::createFromMutable($faker->dateTimeBetween('+1 day', '+1 year')),
+            'planete'           => PlaneteFactory::new(),
+            'objectif'          => $faker->randomElement(self::OBJECTIFS_SPATIAUX),
+            'upgradeTrouDeVer'  => $faker->boolean(30),
         ];
     }
 

@@ -23,18 +23,22 @@ class VoyageRepository extends ServiceEntityRepository
     }
 
     /**
-     * Recherche simple utilisée dans le composant SearchSite
+     * Recherche simple (pour un composant de type SearchSite par exemple).
+     *
+     * @param string|null $query          Terme à rechercher dans l’objectif
+     * @param int[]       $searchPlanetes Liste d’IDs de planètes filtrantes
+     * @param int|null    $limit          Nombre max de résultats
      *
      * @return Voyage[]
      */
     public function findBySearch(
-        string $query,
-        array $searchPlanets = [],
-        int $limit = null
+        ?string $query,
+        array $searchPlanetes = [],
+        ?int $limit = null
     ): array {
-        $qb = $this->findBySearchQueryBuilder($query, $searchPlanets);
+        $qb = $this->findBySearchQueryBuilder($query, $searchPlanetes);
 
-        if ($limit !== null) {
+        if (null !== $limit) {
             $qb->setMaxResults($limit);
         }
 
@@ -42,30 +46,36 @@ class VoyageRepository extends ServiceEntityRepository
     }
 
     /**
-     * Construit une requête de recherche paginable avec tri
+     * Construit un QueryBuilder paginable et triable.
+     *
+     * @param string|null $query          Terme à chercher dans l’objectif
+     * @param int[]       $searchPlanetes Liste d’IDs de planètes filtrantes
+     * @param string|null $sort           Champ de tri (`objectif` ou `depart`)
+     * @param string      $direction      `ASC` ou `DESC`
      */
     public function findBySearchQueryBuilder(
         ?string $query,
-        array $searchPlanets = [],
+        array $searchPlanetes = [],
         ?string $sort = null,
         string $direction = 'DESC'
     ): QueryBuilder {
         $qb = $this->createQueryBuilder('v')
-            ->leftJoin('v.planet', 'p')
+            ->leftJoin('v.planete', 'p')
             ->addSelect('p');
 
         if (!empty($query)) {
-            $qb->andWhere('v.purpose LIKE :query')
+            $qb->andWhere('v.objectif LIKE :query')
                 ->setParameter('query', '%' . $query . '%');
         }
 
-        if (!empty($searchPlanets)) {
-            $qb->andWhere('p.id IN (:planets)')
-                ->setParameter('planets', $searchPlanets);
+        if (!empty($searchPlanetes)) {
+            $qb->andWhere('p.id IN (:planetes)')
+                ->setParameter('planetes', $searchPlanetes);
         }
 
-        $validSorts = ['purpose', 'leaveAt'];
-        $sort = in_array($sort, $validSorts, true) ? $sort : 'leaveAt';
+        // Seuls ces champs sont autorisés au tri
+        $validSorts = ['objectif', 'depart'];
+        $sort = in_array($sort, $validSorts, true) ? $sort : 'depart';
         $direction = strtoupper($direction) === 'DESC' ? 'DESC' : 'ASC';
 
         $qb->orderBy('v.' . $sort, $direction);

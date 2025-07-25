@@ -1,1 +1,12 @@
-<twig:VoyageForm :form="form" :initialFormData="voyage" />
+{% form_theme form 'form/flowbite_theme.html.twig' %}
+
+{{ form_start(form) }}
+    {{ form_row(form.objectif) }}
+    {{ form_row(form.depart) }}
+    {{ form_row(form.planete) }}
+    {{ form_row(form.upgradeTrouDeVer) }}
+
+<button class="mt-4 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">
+    {{ button_label|default('Enregistrer') }}
+</button>
+{{ form_end(form) }}

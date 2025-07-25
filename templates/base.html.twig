@@ -1,18 +1,16 @@
+{# templates/base.html.twig #}
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% block title %}Explorateurs de l’espace !{% endblock %}</title>
-
+    <title>{% block title %}Explorateurs de l’espace !{% endblock %}</title>
     {% if app.environment != 'test' %}
         <meta name="view-transition">
     {% endif %}
-
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
 
     {% block stylesheets %}
-        <link rel="stylesheet" href="{{ asset('build/app.css') }}">
         {{ importmap('app') }}
     {% endblock %}
 
@@ -34,37 +32,33 @@
                 </a>
                 <a href="{{ path('app_homepage') }}" class="text-xl ml-3">PopySpaceOrigin</a>
                 <a href="{{ path('app_voyage_index') }}" class="ml-6 hover:text-gray-400">Voyages</a>
-                <a href="{{ path('app_planet_index') }}" class="ml-4 hover:text-gray-400">Planètes</a>
+                <a href="{{ path('app_planete_index') }}" class="ml-4 hover:text-gray-400">Planètes</a>
             </div>
 
             <div
-                id="global-search-modal"
-                class="relative"
-                data-controller="modal"
+                is="modal"
+                data-close-button="true"
+                data-padding=""
+                data-fixed-top="true"
                 data-turbo-permanent
+                id="global-search-modal"
                 data-action="keydown.meta+k@window->modal#open keydown.ctrl+k@window->modal#open"
             >
-                <div
-                    class="hidden md:flex pr-10 items-center space-x-2 border-2 border-gray-900 rounded-lg p-2 bg-gray-800 text-white cursor-pointer"
-                    data-action="click->modal#open"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                        <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"/>
-                        <path d="M21 21l-6 -6"/>
-                    </svg>
-                    <span class="pl-2 pr-10 text-gray-500">Rechercher Cmd+K</span>
-                </div>
-
-                <div class="hidden bg-gray-900 p-4 rounded-lg mt-2" data-modal-target="content">
-                    <label for="global-search-input" class="sr-only">Rechercher</label>
-                    <input
-                        type="text"
-                        id="global-search-input"
-                        class="w-full px-4 py-2 rounded bg-gray-800 text-white"
-                        placeholder="Recherche..."
+                <template data-slot="trigger">
+                    <div
+                        class="hidden md:flex pr-10 items-center space-x-2 border-2 border-gray-900 rounded-lg p-2 bg-gray-800 text-white cursor-pointer"
+                        data-action="click->modal#open"
                     >
-                </div>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                            <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0"/>
+                            <path d="M21 21l-6 -6"/>
+                        </svg>
+                        <span class="pl-2 pr-10 text-gray-500">Rechercher Cmd+K</span>
+                    </div>
+                </template>
+
+                <div data-controller="search-site"></div>
             </div>
         </nav>
     </header>
@@ -75,38 +69,35 @@
 
     <footer class="py-4 mt-6 bg-gray-800 text-center">
         <div class="text-sm">
-            Avec <svg class="inline-block w-4 h-4 text-red-600 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                <path d="M10 3.22l-.61-.6a5.5 5.5 0 00-7.78 7.78l7.39 7.4 7.39-7.4a5.5 5.5 0 00-7.78-7.78l-.61.61z"/>
-            </svg> et Symfony.
+            🌍🚀 Popy, specialist in futuristic travel
         </div>
     </footer>
 </div>
 
-<div
-    id="modal"
-    data-controller="modal"
-    data-modal-target="dynamicContent"
-    data-action="turbo:before-fetch-request->modal#showLoading"
-    class="aria-busy:opacity-50 transition-opacity"
-    data-turbo-frame
->
-    {{ include('_frameSuccessStreams.html.twig', { frame: 'modal' }) }}
-</div>
-
-<div class="hidden" id="modal-loading-template">
-    <div class="bg-space-pattern bg-cover rounded-lg p-8">
-        <div class="space-y-2">
-            <div class="h-4 bg-gray-700 rounded w-3/4 animate-pulse"></div>
-            <div class="h-4 bg-gray-700 rounded animate-pulse"></div>
-            <div class="h-4 bg-gray-700 rounded animate-pulse"></div>
-            <div class="h-4"></div>
-            <div class="h-4 bg-gray-700 rounded animate-pulse"></div>
-            <div class="h-4 bg-gray-700 rounded w-1/2 animate-pulse"></div>
-            <div class="h-4 bg-gray-700 rounded w-3/4 animate-pulse"></div>
-            <div class="h-4"></div>
-            <div class="h-4 bg-gray-700 rounded w-1/2 animate-pulse"></div>
+<div is="modal">
+    <turbo-frame
+        id="modal"
+        data-modal-target="dynamicContent"
+        data-action="turbo:before-fetch-request->modal#showLoading"
+        class="aria-busy:opacity-50 transition-opacity"
+    >
+        {{ include('_frameSuccessStreams.html.twig', { frame: 'modal' }) }}
+    </turbo-frame>
+    <template data-slot="loading_template">
+        <div class="bg-space-pattern bg-cover rounded-lg p-8">
+            <div class="space-y-2">
+                <div class="h-4 bg-gray-700 rounded w-3/4 animate-pulse"></div>
+                <div class="h-4 bg-gray-700 rounded animate-pulse"></div>
+                <div class="h-4 bg-gray-700 rounded animate-pulse"></div>
+                <div class="h-4"></div>
+                <div class="h-4 bg-gray-700 rounded animate-pulse"></div>
+                <div class="h-4 bg-gray-700 rounded w-1/2 animate-pulse"></div>
+                <div class="h-4 bg-gray-700 rounded w-3/4 animate-pulse"></div>
+                <div class="h-4"></div>
+                <div class="h-4 bg-gray-700 rounded w-1/2 animate-pulse"></div>
+            </div>
         </div>
-    </div>
+    </template>
 </div>
 
 <div id="flash-container">

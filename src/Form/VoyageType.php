@@ -2,50 +2,56 @@
 
 namespace App\Form;
 
-use App\Entity\Planete;
 use App\Entity\Voyage;
+use App\Entity\Planete;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use SymfonyCasts\DynamicForms\DependentField;
-use SymfonyCasts\DynamicForms\DynamicFormBuilder;
+use Symfonycasts\DynamicForms\DependentField;
+use Symfonycasts\DynamicForms\DynamicFormBuilder;
 
 class VoyageType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        // On wrappe le builder pour gérer le champ conditionnel
         $builder = new DynamicFormBuilder($builder);
 
         $builder
-            ->add('purpose', null, [
-                'label' => 'Objet du voyage',
+            ->add('objectif', TextType::class, [
+                'label' => 'Objectif du voyage',
             ])
-            ->add('leaveAt', DateType::class, [
-                'label' => 'Date de départ',
+            ->add('depart', DateType::class, [
+                'label'  => 'Date de départ',
                 'widget' => 'single_text',
-                'attr' => [
+                'attr'   => [
                     'data-controller' => 'datepicker',
                 ],
             ])
-            ->add('planet', null, [
-                'label' => 'Planète de destination',
-                'choice_label' => 'name',
-                'placeholder' => 'Sélectionner une planète',
+            ->add('planete', EntityType::class, [
+                'label'        => 'Planète',
+                'class'        => Planete::class,
+                'choice_label' => 'nom',
+                'placeholder'  => 'Choisir une planète',
+                'attr'         => ['class' => 'tom-select'], // ✅ important pour que Tom Select s'active
             ])
-            ->addDependent('wormholeUpgrade', ['planet'], function (DependentField $field, ?Planete $planet) {
-                if (!$planet || $planet->isInMilkyWay()) {
+            ->addDependent('upgradeTrouDeVer', ['planete'], function (DependentField $field, ?Planete $planete) {
+                if (!$planete || $planete->isDansVoieLactee()) {
                     return;
                 }
 
                 $field->add(ChoiceType::class, [
-                    'label' => 'Amélioration tunnel de ver',
-                    'choices' => [
+                    'label'    => 'Améliorer le trou de ver ?',
+                    'choices'  => [
                         'Oui' => true,
                         'Non' => false,
                     ],
-                    'placeholder' => 'Souhaitez-vous l’activer ?',
+                    'expanded' => true,
+                    'multiple' => false,
                 ]);
             });
     }

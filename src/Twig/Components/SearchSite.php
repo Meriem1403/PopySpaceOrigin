@@ -1,4 +1,5 @@
 <?php
+// src/Twig/Components/RechercheSite.php
 
 namespace App\Twig\Components;
 
@@ -8,29 +9,27 @@ use Symfony\UX\LiveComponent\Attribute\AsLiveComponent;
 use Symfony\UX\LiveComponent\Attribute\LiveProp;
 use Symfony\UX\LiveComponent\DefaultActionTrait;
 
-#[AsLiveComponent]
+#[AsLiveComponent('recherche_site')]
 class SearchSite
 {
     use DefaultActionTrait;
 
     #[LiveProp(writable: true)]
-    public string $query = '';
+    public string $requete = '';
 
-    public function __construct(
-        readonly private VoyageRepository $voyageRepository
-    ) {}
+    public function __construct(private readonly VoyageRepository $voyageRepository)
+    {
+    }
 
     /**
      * @return Voyage[]
      */
     public function voyages(): array
     {
-        $trimmed = trim($this->query);
-
-        if ($trimmed === '') {
+        if ('' === $this->requete) {
             return [];
         }
 
-        return $this->voyageRepository->findBySearch($trimmed, [], 10);
+        return $this->voyageRepository->findBySearch($this->requete, [], 10);
     }
 }

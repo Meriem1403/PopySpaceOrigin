@@ -1,18 +1,37 @@
+{# templates/main/homepage.html.twig #}
 {% extends 'base.html.twig' %}
 
 {% block title %}Explorateurs de l’espace !{% endblock %}
 
 {% macro sortArrow(sortName, sort, sortDirection) %}
-    {# SVG tri inchangé ici, selon ta version originale #}
+    {% if sort == sortName %}
+        {% if sortDirection == 'asc' %}
+            <svg xmlns="http://www.w3.org/2000/svg" class="inline-block w-4 h-4" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                <path d="M6 15l6 -6l6 6"/>
+            </svg>
+        {% else %}
+            <svg xmlns="http://www.w3.org/2000/svg" class="inline-block w-4 h-4" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                <path d="M6 9l6 6l6 -6"/>
+            </svg>
+        {% endif %}
+    {% else %}
+        <svg xmlns="http://www.w3.org/2000/svg" class="inline-block w-4 h-4 text-slate-300" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+            <path d="M8 9l4 -4l4 4"/>
+            <path d="M16 15l-4 4l-4 -4"/>
+        </svg>
+    {% endif %}
 {% endmacro %}
 
 {% block body %}
     <div class="flex">
         <aside class="hidden md:block md:w-64 bg-gray-900 px-2 py-6">
             <h2 class="text-xl text-white font-semibold mb-6 px-2">Planètes</h2>
-            <div id="planet-info" data-turbo-frame>
+            <turbo-frame id="planete-info">
                 {{ include('main/_planete_list.html.twig') }}
-            </div>
+            </turbo-frame>
         </aside>
 
         <section class="flex-1 ml-10">
@@ -23,63 +42,60 @@
                 data-controller="autosubmit"
                 data-turbo-frame="voyage-list"
             >
-                <div class="w-1/3 flex items-center space-x-2">
+                <div class="w-1/3 flex">
                     <input
                         type="search"
                         name="query"
                         value="{{ app.request.query.get('query') }}"
                         aria-label="Rechercher un voyage"
-                        placeholder="Rechercher un voyage"
+                        placeholder="Rechercher un voyage…"
                         class="px-4 py-2 rounded bg-gray-800 text-white placeholder-gray-400"
                         data-action="autosubmit#debouncedSubmit"
                         autofocus
                     >
 
-                    <button
-                        type="button"
-                        class="text-blue-400 underline text-sm"
-                        data-action="modal#open"
-                    >
-                        Options
-                    </button>
+                    {# Options de filtre planètes en modal #}
+                    <twig:Modal closeButton="true">
+                        <twig:block name="trigger">
+                            <twig:Button variant="link" type="button" data-action="modal#open">
+                                Options
+                            </twig:Button>
+                        </twig:block>
 
-                    <div
-                        hidden
-                        class="absolute bg-gray-800 p-4 rounded shadow-lg z-50"
-                        data-modal-target="modal"
-                    >
-                        <h3 class="text-white text-lg font-semibold mb-2">Options de recherche</h3>
+                        <h3 class="text-white text-lg font-semibold mb-2">Filtres de recherche</h3>
                         <hr class="mb-4">
                         <h4 class="text-white text-sm font-semibold mb-2">Planètes</h4>
-
-                        {% for planet in planets %}
+                        {% for planete in planetes %}
                             <div class="flex items-center mb-4">
                                 <input
                                     type="checkbox"
-                                    name="planets[]"
-                                    value="{{ planet.id }}"
-                                    id="planet-search-{{ planet.id }}"
-                                    {{ planet.id in searchPlanets ? 'checked' : '' }}
-                                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                                    name="planetes[]"
+                                    value="{{ planete.id }}"
+                                    id="planete-search-{{ planete.id }}"
+                                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded"
+                                    {{ planete.id in searchPlanetes ? 'checked' : '' }}
                                 >
-                                <label for="planet-search-{{ planet.id }}" class="ms-2 text-sm font-medium text-gray-300">{{ planet.name }}</label>
+                                <label for="planete-search-{{ planete.id }}" class="ml-2 text-sm font-medium text-gray-300">
+                                    {{ planete.nom }}
+                                </label>
                             </div>
                         {% endfor %}
-
                         <div class="flex justify-end">
-                            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white text-sm px-4 py-2 rounded">
+                            <twig:Button variant="success" data-action="modal#close">
                                 Voir les résultats
-                            </button>
+                            </twig:Button>
                         </div>
-                    </div>
+                    </twig:Modal>
                 </div>
 
                 {% block result_count %}
-                    <div id="voyage-result-count" class="whitespace-nowrap m-2 mr-4">{{ voyages|length }} résultats</div>
+                    <div id="voyage-result-count" class="whitespace-nowrap m-2 mr-4">
+                        {{ voyages|length }} résultats
+                    </div>
                 {% endblock %}
             </form>
 
-            <div id="voyage-list" data-turbo-frame data-turbo-action="advance">
+            <turbo-frame id="voyage-list" data-turbo-action="advance">
                 <div class="bg-gray-800 p-4 rounded">
                     <table class="w-full text-white">
                         <thead>
@@ -87,20 +103,20 @@
                             <th class="text-left py-2">
                                 <a href="{{ path('app_homepage', {
                                     ...app.request.query.all(),
-                                    sort: 'purpose',
-                                    sortDirection: sort == 'purpose' and sortDirection == 'asc' ? 'desc' : 'asc',
+                                    sort: 'objectif',
+                                    sortDirection: sort == 'objectif' and sortDirection == 'asc' ? 'desc' : 'asc',
                                 }) }}">
-                                    Objet {{ _self.sortArrow('purpose', sort, sortDirection) }}
+                                    Objectif {{ _self.sortArrow('objectif', sort, sortDirection) }}
                                 </a>
                             </th>
                             <th class="text-left py-2 pr-4">Planète</th>
                             <th class="text-left py-2">
                                 <a href="{{ path('app_homepage', {
                                     ...app.request.query.all(),
-                                    sort: 'leaveAt',
-                                    sortDirection: sort == 'leaveAt' and sortDirection == 'asc' ? 'desc' : 'asc',
+                                    sort: 'depart',
+                                    sortDirection: sort == 'depart' and sortDirection == 'asc' ? 'desc' : 'asc',
                                 }) }}">
-                                    Départ {{ _self.sortArrow('leaveAt', sort, sortDirection) }}
+                                    Départ {{ _self.sortArrow('depart', sort, sortDirection) }}
                                 </a>
                             </th>
                         </tr>
@@ -108,16 +124,16 @@
                         <tbody>
                         {% for voyage in voyages %}
                             <tr class="border-b border-gray-700 {% if loop.index is odd %} bg-gray-800 {% else %} bg-gray-700 {% endif %}">
-                                <td class="p-4">{{ voyage.purpose }}</td>
+                                <td class="p-4">{{ voyage.objectif }}</td>
                                 <td class="px-2 whitespace-nowrap">
                                     <div
                                         data-controller="popover"
                                         data-action="mouseenter->popover#show mouseleave->popover#hide"
-                                        class="relative"
+                                        class="relative inline-block"
                                     >
                                         <img
-                                            src="{{ asset('images/' ~ voyage.planet.imageFilename) }}"
-                                            alt="Image de {{ voyage.planet.name }}"
+                                            src="{{ asset('images/' ~ voyage.planete.image) }}"
+                                            alt="Image de {{ voyage.planete.nom }}"
                                             class="inline-block w-8 h-8 rounded-full bg-gray-600 ml-2"
                                         >
 
@@ -126,12 +142,11 @@
                                                 data-popover-target="card"
                                                 class="max-w-sm rounded shadow-lg bg-gray-900 absolute left-0 bottom-10"
                                             >
-                                                <div
-                                                    id="planet-card-{{ voyage.planet.id }}"
-                                                    data-turbo-frame
+                                                <turbo-frame
+                                                    id="planete-card-{{ voyage.planete.id }}"
                                                     data-skip-transition
                                                     data-turbo-target="_top"
-                                                    data-turbo-src="{{ path('app_planet_show_card', { id: voyage.planet.id }) }}"
+                                                    src="{{ path('app_planete_show_card', { id: voyage.planete.id }) }}"
                                                 >
                                                     <div class="p-10">
                                                         <svg xmlns="http://www.w3.org/2000/svg" class="animate-spin" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -139,12 +154,12 @@
                                                             <path d="M12 3a9 9 0 1 0 9 9"/>
                                                         </svg>
                                                     </div>
-                                                </div>
+                                                </turbo-frame>
                                             </div>
                                         </template>
                                     </div>
                                 </td>
-                                <td class="px-2 whitespace-nowrap">{{ voyage.leaveAt|ago }}</td>
+                                <td class="px-2 whitespace-nowrap">{{ voyage.depart|ago }}</td>
                             </tr>
                         {% endfor %}
                         </tbody>
@@ -153,18 +168,18 @@
 
                 <div class="flex items-center mt-6 space-x-4">
                     {% if voyages.hasPreviousPage %}
-                        <a href="{{ pagerfanta_page_url(voyages, voyages.previousPage) }}" class="block py-2 px-4 bg-gray-700 text-white rounded hover:bg-gray-600">Précédent</a>
+                        <a href="{{ pagerfanta_page_url(voyages, voyages.previousPage) }}" class="py-2 px-4 bg-gray-700 text-white rounded hover:bg-gray-600">Précédent</a>
                     {% endif %}
                     {% if voyages.hasNextPage %}
-                        <a href="{{ pagerfanta_page_url(voyages, voyages.nextPage) }}" class="block py-2 px-4 bg-gray-700 text-white rounded hover:bg-gray-600">Suivant</a>
+                        <a href="{{ pagerfanta_page_url(voyages, voyages.nextPage) }}" class="py-2 px-4 bg-gray-700 text-white rounded hover:bg-gray-600">Suivant</a>
                     {% endif %}
                     <div class="ml-4">Page {{ voyages.currentPage }}/{{ voyages.nbPages }}</div>
                 </div>
 
-                <div id="turbo-placeholder">
-                    {{ block('result_count') }}
-                </div>
-            </div>
+                <turbo-stream action="replace" target="voyage-result-count">
+                    <template>{{ block('result_count') }}</template>
+                </turbo-stream>
+            </turbo-frame>
         </section>
     </div>
 {% endblock %}

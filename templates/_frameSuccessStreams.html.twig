@@ -1,0 +1,12 @@
+{# templates/_frameSuccessStreams.html.twig #}
+{% if app.request.headers.get('turbo-frame') == frame %}
+    {# On émet d’abord les flashs visuels dans le conteneur principal #}
+    <turbo-stream action="append" target="flash-container">
+        <template>{{ include('_flashes.html.twig') }}</template>
+    </turbo-stream>
+
+    {# Puis on émet toutes les “streams” en attente (pour turbo/modal) #}
+    {% for stream in app.flashes('stream') %}
+        {{ stream|raw }}
+    {% endfor %}
+{% endif %}

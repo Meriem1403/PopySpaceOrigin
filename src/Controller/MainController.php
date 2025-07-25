@@ -17,31 +17,32 @@ class MainController extends AbstractController
     #[Route('/', name: 'app_homepage')]
     public function homepage(
         VoyageRepository $voyageRepository,
-        PlaneteRepository $planetRepository,
+        PlaneteRepository $planeteRepository,
         #[MapQueryParameter] int $page = 1,
-        #[MapQueryParameter] string $sort = 'leaveAt',
+        #[MapQueryParameter] string $sort = 'depart',
         #[MapQueryParameter] string $sortDirection = 'ASC',
         #[MapQueryParameter] ?string $query = null,
-        #[MapQueryParameter('planets', FILTER_VALIDATE_INT)] array $searchPlanets = [],
+        #[MapQueryParameter('planetes', FILTER_VALIDATE_INT)] array $searchPlanetes = [],
     ): Response {
-        $validSorts = ['purpose', 'leaveAt'];
-        $sort = in_array($sort, $validSorts, true) ? $sort : 'leaveAt';
+        // Seuls ces deux tris sont autorisés : "objectif" et "depart"
+        $validSorts = ['objectif', 'depart'];
+        $sort = in_array($sort, $validSorts, true) ? $sort : 'depart';
+        $direction = strtoupper($sortDirection) === 'DESC' ? 'DESC' : 'ASC';
 
-        // ⚠️ À implémenter dans VoyageRepository
-        $queryBuilder = $voyageRepository->findBySearchQueryBuilder($query, $searchPlanets, $sort, $sortDirection);
-
+        // Construction du Pagerfanta
+        $qb = $voyageRepository->findBySearchQueryBuilder($query, $searchPlanetes, $sort, $direction);
         $pager = Pagerfanta::createForCurrentPageWithMaxPerPage(
-            new QueryAdapter($queryBuilder),
+            new QueryAdapter($qb),
             $page,
             10
         );
 
         return $this->render('main/homepage.html.twig', [
-            'voyages' => $pager,
-            'planets' => $planetRepository->findAll(),
-            'searchPlanets' => $searchPlanets,
-            'sort' => $sort,
-            'sortDirection' => $sortDirection,
+            'voyages'        => $pager,
+            'planetes'       => $planeteRepository->findAll(),
+            'searchPlanetes' => $searchPlanetes,
+            'sort'           => $sort,
+            'sortDirection'  => $direction,
         ]);
     }
 }

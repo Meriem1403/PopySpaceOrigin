@@ -1,19 +1,20 @@
+// assets/controllers/modal_controller.js
 import { Controller } from '@hotwired/stimulus';
 
 export default class extends Controller {
     static targets = ['dialog', 'dynamicContent', 'loadingContent'];
 
+    // We'll hold our MutationObserver here
     observer = null;
 
     connect() {
         if (this.hasDynamicContentTarget) {
-            // when the content changes, call this.open()
+            // Observe changes in the dynamicContentTarget to open/close the dialog
             this.observer = new MutationObserver(() => {
-                const shouldOpen = this.dynamicContentTarget.innerHTML.trim().length > 0;
-
-                if (shouldOpen && !this.dialogTarget.open) {
+                const hasContent = this.dynamicContentTarget.innerHTML.trim().length > 0;
+                if (hasContent && !this.dialogTarget.open) {
                     this.open();
-                } else if (!shouldOpen && this.dialogTarget.open) {
+                } else if (!hasContent && this.dialogTarget.open) {
                     this.close();
                 }
             });
@@ -29,7 +30,7 @@ export default class extends Controller {
         if (this.observer) {
             this.observer.disconnect();
         }
-        if (this.dialogTarget.open) {
+        if (this.hasDialogTarget && this.dialogTarget.open) {
             this.close();
         }
     }
@@ -45,31 +46,16 @@ export default class extends Controller {
     }
 
     clickOutside(event) {
-        if (event.target !== this.dialogTarget) {
-            return;
-        }
-
-        if (!this.#isClickInElement(event, this.dialogTarget)) {
-            this.dialogTarget.close();
+        // Close the dialog if the user clicks the backdrop (<dialog> element itself)
+        if (this.hasDialogTarget && event.target === this.dialogTarget) {
+            this.close();
         }
     }
 
     showLoading() {
-        // do nothing if the dialog is already open
-        if (this.dialogTarget.open) {
-            return;
+        // If not already open, show the loading template while fetching
+        if (this.hasDialogTarget && !this.dialogTarget.open && this.hasLoadingContentTarget) {
+            this.dynamicContentTarget.innerHTML = this.loadingContentTarget.innerHTML;
         }
-
-        this.dynamicContentTarget.innerHTML = this.loadingContentTarget.innerHTML;
-    }
-
-    #isClickInElement(event, element) {
-        const rect = element.getBoundingClientRect();
-        return (
-            rect.top <= event.clientY &&
-            event.clientY <= rect.top + rect.height &&
-            rect.left <= event.clientX &&
-            event.clientX <= rect.left + rect.width
-        );
     }
 }
