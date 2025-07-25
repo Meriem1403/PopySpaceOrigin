@@ -1,0 +1,12 @@
+<form
+    method="post"
+    action="{{ path('app_planet_delete', {'id': planet.id}) }}"
+    onsubmit="return confirm('Confirmer la suppression ?');"
+>
+    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ planet.id) }}">
+    <button
+        class="px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:ring-red-300 focus:outline-none"
+    >
+        Supprimer
+    </button>
+</form>
