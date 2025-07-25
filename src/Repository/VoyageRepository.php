@@ -4,10 +4,16 @@ namespace App\Repository;
 
 use App\Entity\Voyage;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @extends ServiceEntityRepository<Voyage>
+ *
+ * @method Voyage|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Voyage|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Voyage[]    findAll()
+ * @method Voyage[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class VoyageRepository extends ServiceEntityRepository
 {
@@ -16,28 +22,33 @@ class VoyageRepository extends ServiceEntityRepository
         parent::__construct($registry, Voyage::class);
     }
 
-    //    /**
-    //     * @return Voyage[] Returns an array of Voyage objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('v')
-    //            ->andWhere('v.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('v.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    public function findBySearchQueryBuilder(
+        ?string $query,
+        array $searchPlanets = [],
+        ?string $sort = null,
+        string $direction = 'DESC'
+    ): QueryBuilder {
+        $qb = $this->createQueryBuilder('v')
+            ->leftJoin('v.planet', 'p')
+            ->addSelect('p');
 
-    //    public function findOneBySomeField($value): ?Voyage
-    //    {
-    //        return $this->createQueryBuilder('v')
-    //            ->andWhere('v.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        if ($query !== null && $query !== '') {
+            $qb->andWhere('v.purpose LIKE :query')
+                ->setParameter('query', '%' . $query . '%');
+        }
+
+        if (!empty($searchPlanets)) {
+            $qb->andWhere('p.id IN (:planets)')
+                ->setParameter('planets', $searchPlanets);
+        }
+
+        $validSorts = ['purpose', 'leaveAt'];
+        if (in_array($sort, $validSorts, true)) {
+            $qb->orderBy('v.' . $sort, strtoupper($direction) === 'DESC' ? 'DESC' : 'ASC');
+        } else {
+            $qb->orderBy('v.leaveAt', 'ASC');
+        }
+
+        return $qb;
+    }
 }

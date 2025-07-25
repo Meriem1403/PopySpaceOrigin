@@ -25,7 +25,9 @@ class VoyageForm extends AbstractController
         $voyage = $this->initialFormData ?? new Voyage();
 
         return $this->createForm(VoyageType::class, $voyage, [
-            'action' => $voyage->getId() ? $this->generateUrl('app_voyage_edit', ['id' => $voyage->getId()]) : $this->generateUrl('app_voyage_new'),
+            'action' => $voyage->getId()
+                ? $this->generateUrl('app_voyage_edit', ['id' => $voyage->getId()])
+                : $this->generateUrl('app_voyage_new'),
         ]);
     }
 }
